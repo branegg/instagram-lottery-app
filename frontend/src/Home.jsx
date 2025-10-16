@@ -34,10 +34,10 @@ function Home() {
         setStatus('success')
         setFormData({ name: '', email: '', instagramUsername: '' })
       } else {
-        setStatus(data.error || 'An error occurred')
+        setStatus(data.error || 'Wystąpił błąd')
       }
     } catch (error) {
-      setStatus('Failed to submit. Please try again.')
+      setStatus('Nie udało się wysłać. Spróbuj ponownie.')
     } finally {
       setLoading(false)
     }
@@ -54,8 +54,8 @@ function Home() {
     <div className="app">
       <div className="container">
         <header className="header">
-          <h1>Bagiety Poznan Lottery</h1>
-          <p className="subtitle">Follow us on Instagram to enter!</p>
+          <h1>Loteria Bagiety Poznań</h1>
+          <p className="subtitle">Śledź nas na Instagramie, aby wziąć udział!</p>
         </header>
 
         <div className="instagram-section">
@@ -70,12 +70,12 @@ function Home() {
             </svg>
             @bagiety_poznan
           </a>
-          <p className="follow-instruction">Follow us first, then enter the lottery below!</p>
+          <p className="follow-instruction">Najpierw śledź nas, a następnie weź udział w loterii poniżej!</p>
         </div>
 
         <form className="lottery-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="name">Full Name</label>
+            <label htmlFor="name">Imię i nazwisko</label>
             <input
               type="text"
               id="name"
@@ -83,12 +83,12 @@ function Home() {
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="Enter your full name"
+              placeholder="Wpisz swoje imię i nazwisko"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email Address</label>
+            <label htmlFor="email">Adres e-mail</label>
             <input
               type="email"
               id="email"
@@ -96,12 +96,12 @@ function Home() {
               value={formData.email}
               onChange={handleChange}
               required
-              placeholder="your.email@example.com"
+              placeholder="twoj.email@przykład.pl"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="instagramUsername">Instagram Username</label>
+            <label htmlFor="instagramUsername">Nazwa użytkownika Instagram</label>
             <input
               type="text"
               id="instagramUsername"
@@ -109,17 +109,17 @@ function Home() {
               value={formData.instagramUsername}
               onChange={handleChange}
               required
-              placeholder="@yourusername"
+              placeholder="@twoja_nazwa"
             />
           </div>
 
           <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? 'Submitting...' : 'Enter Lottery'}
+            {loading ? 'Wysyłanie...' : 'Weź udział w loterii'}
           </button>
 
           {status === 'success' && (
             <div className="message success">
-              Thank you for entering! We'll verify your follow and contact you if you win.
+              Dziękujemy za udział! Zweryfikujemy Twoje obserwowanie i skontaktujemy się, jeśli wygrasz.
             </div>
           )}
 
@@ -131,7 +131,7 @@ function Home() {
         </form>
 
         <footer className="footer">
-          <p>Winners will be selected randomly and notified via email.</p>
+          <p>Zwycięzcy zostaną wybrani losowo i powiadomieni e-mailem.</p>
           <button
             onClick={() => navigate('/admin')}
             className="admin-link-btn"

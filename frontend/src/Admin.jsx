@@ -37,7 +37,7 @@ function Admin() {
       sessionStorage.setItem('adminAuth', 'true')
       fetchEntries(true)
     } else {
-      alert('Invalid password')
+      alert('Nieprawidłowe hasło')
     }
   }
 
@@ -67,7 +67,7 @@ function Admin() {
       })
     } catch (error) {
       console.error('Error fetching entries:', error)
-      alert('Failed to fetch entries')
+      alert('Nie udało się pobrać zgłoszeń')
     } finally {
       setLoading(false)
     }
@@ -81,18 +81,18 @@ function Admin() {
 
       if (response.ok) {
         fetchEntries(showAll)
-        alert('Entry verified successfully!')
+        alert('Zgłoszenie zostało pomyślnie zweryfikowane!')
       } else {
-        alert('Failed to verify entry')
+        alert('Nie udało się zweryfikować zgłoszenia')
       }
     } catch (error) {
       console.error('Error verifying entry:', error)
-      alert('Failed to verify entry')
+      alert('Nie udało się zweryfikować zgłoszenia')
     }
   }
 
   const handlePickWinner = async () => {
-    if (!confirm('Are you sure you want to pick a random winner from verified entries?')) {
+    if (!confirm('Czy na pewno chcesz wybrać losowego zwycięzcę spośród zweryfikowanych zgłoszeń?')) {
       return
     }
 
@@ -103,11 +103,11 @@ function Admin() {
       if (response.ok && data.winner) {
         setWinner(data.winner)
       } else {
-        alert(data.error || 'No verified entries found')
+        alert(data.error || 'Nie znaleziono zweryfikowanych zgłoszeń')
       }
     } catch (error) {
       console.error('Error picking winner:', error)
-      alert('Failed to pick winner')
+      alert('Nie udało się wybrać zwycięzcy')
     }
   }
 
@@ -115,20 +115,20 @@ function Admin() {
     return (
       <div className="admin-login">
         <div className="login-card">
-          <h1>Admin Login</h1>
+          <h1>Logowanie administratora</h1>
           <form onSubmit={handleLogin}>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter admin password"
+              placeholder="Wpisz hasło administratora"
               required
               autoFocus
             />
-            <button type="submit">Login</button>
+            <button type="submit">Zaloguj</button>
           </form>
           <button onClick={() => navigate('/')} className="back-btn">
-            Back to Home
+            Powrót do strony głównej
           </button>
         </div>
       </div>
@@ -139,30 +139,30 @@ function Admin() {
     <div className="admin-dashboard">
       <header className="admin-header">
         <div>
-          <h1>Lottery Admin Dashboard</h1>
-          <p>Manage lottery entries and pick winners</p>
+          <h1>Panel administratora loterii</h1>
+          <p>Zarządzaj zgłoszeniami i wybieraj zwycięzców</p>
         </div>
         <div className="header-actions">
           <button onClick={() => navigate('/')} className="btn-secondary">
-            Home
+            Strona główna
           </button>
           <button onClick={handleLogout} className="btn-secondary">
-            Logout
+            Wyloguj
           </button>
         </div>
       </header>
 
       <div className="stats-grid">
         <div className="stat-card">
-          <h3>Total Entries</h3>
+          <h3>Wszystkie zgłoszenia</h3>
           <p className="stat-number">{stats.total}</p>
         </div>
         <div className="stat-card verified">
-          <h3>Verified</h3>
+          <h3>Zweryfikowane</h3>
           <p className="stat-number">{stats.verified}</p>
         </div>
         <div className="stat-card unverified">
-          <h3>Unverified</h3>
+          <h3>Niezweryfikowane</h3>
           <p className="stat-number">{stats.unverified}</p>
         </div>
       </div>
@@ -173,53 +173,53 @@ function Admin() {
             className={showAll ? 'active' : ''}
             onClick={() => setShowAll(true)}
           >
-            All Entries
+            Wszystkie zgłoszenia
           </button>
           <button
             className={!showAll ? 'active' : ''}
             onClick={() => setShowAll(false)}
           >
-            Verified Only
+            Tylko zweryfikowane
           </button>
         </div>
         <button onClick={handlePickWinner} className="btn-primary pick-winner">
-          🎲 Pick Random Winner
+          🎲 Wybierz losowego zwycięzcę
         </button>
       </div>
 
       {winner && (
         <div className="winner-card">
-          <h2>🎉 Winner Selected!</h2>
+          <h2>🎉 Wybrano zwycięzcę!</h2>
           <div className="winner-info">
-            <p><strong>Name:</strong> {winner.name}</p>
-            <p><strong>Email:</strong> {winner.email}</p>
+            <p><strong>Imię:</strong> {winner.name}</p>
+            <p><strong>E-mail:</strong> {winner.email}</p>
             <p><strong>Instagram:</strong> @{winner.instagram_username}</p>
-            <p><strong>Entry Date:</strong> {new Date(winner.created_at).toLocaleDateString()}</p>
+            <p><strong>Data zgłoszenia:</strong> {new Date(winner.created_at).toLocaleDateString('pl-PL')}</p>
           </div>
           <button onClick={() => setWinner(null)} className="btn-secondary">
-            Close
+            Zamknij
           </button>
         </div>
       )}
 
       <div className="entries-container">
-        <h2>Lottery Entries ({entries.length})</h2>
+        <h2>Zgłoszenia do loterii ({entries.length})</h2>
 
         {loading ? (
-          <p>Loading entries...</p>
+          <p>Ładowanie zgłoszeń...</p>
         ) : entries.length === 0 ? (
-          <p>No entries found</p>
+          <p>Nie znaleziono zgłoszeń</p>
         ) : (
           <div className="entries-table">
             <table>
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Email</th>
+                  <th>Imię</th>
+                  <th>E-mail</th>
                   <th>Instagram</th>
                   <th>Status</th>
-                  <th>Date</th>
-                  <th>Action</th>
+                  <th>Data</th>
+                  <th>Akcja</th>
                 </tr>
               </thead>
               <tbody>
@@ -238,17 +238,17 @@ function Admin() {
                     </td>
                     <td>
                       <span className={`badge ${entry.verified === 1 ? 'verified' : 'unverified'}`}>
-                        {entry.verified === 1 ? '✓ Verified' : '⏳ Pending'}
+                        {entry.verified === 1 ? '✓ Zweryfikowano' : '⏳ Oczekujące'}
                       </span>
                     </td>
-                    <td>{new Date(entry.created_at).toLocaleDateString()}</td>
+                    <td>{new Date(entry.created_at).toLocaleDateString('pl-PL')}</td>
                     <td>
                       {entry.verified === 0 && (
                         <button
                           onClick={() => handleVerify(entry.id)}
                           className="btn-verify"
                         >
-                          Verify
+                          Zweryfikuj
                         </button>
                       )}
                     </td>
