@@ -148,6 +148,25 @@
   border-top: 1px solid #e0e0e0;
 }
 
+.admin-link-btn {
+  margin-top: 15px;
+  padding: 8px 20px;
+  background: transparent;
+  color: #667eea;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.admin-link-btn:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-1px);
+}
+
 @media (max-width: 640px) {
   .container {
     padding: 30px 20px;
