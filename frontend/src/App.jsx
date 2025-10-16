@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import './App.css'
 
+const API_URL = import.meta.env.VITE_API_URL || '/api'
+
 function App() {
   const [formData, setFormData] = useState({
     name: '',
@@ -16,7 +18,7 @@ function App() {
     setStatus('')
 
     try {
-      const response = await fetch('/api/lottery/enter', {
+      const response = await fetch(`${API_URL}/lottery/enter`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
