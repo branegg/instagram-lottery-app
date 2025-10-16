@@ -7,7 +7,7 @@ A lottery application where users can enter by following [@bagiety_poznan](https
 - User registration with name, email, and Instagram username
 - Instagram follow verification
 - Admin panel to verify entries and pick random winners
-- SQLite database for storing entries
+- MongoDB database for storing entries
 
 ## Tech Stack
 
@@ -19,7 +19,7 @@ A lottery application where users can enter by following [@bagiety_poznan](https
 **Backend:**
 - Node.js
 - Express
-- SQLite3
+- MongoDB
 
 ## Getting Started
 
@@ -27,12 +27,13 @@ A lottery application where users can enter by following [@bagiety_poznan](https
 
 - Node.js (v18 or higher)
 - npm
+- MongoDB Atlas account (free tier) or local MongoDB installation
 
 ### Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/instagram-lottery-app.git
+git clone https://github.com/branegg/instagram-lottery-app.git
 cd instagram-lottery-app
 ```
 
@@ -48,9 +49,14 @@ cd ../frontend
 npm install
 ```
 
-4. Create a `.env` file in the backend directory:
+4. Set up MongoDB:
+   - Follow the detailed guide in [MONGODB_SETUP.md](./MONGODB_SETUP.md)
+   - Get your MongoDB connection string from MongoDB Atlas
+
+5. Create a `.env` file in the backend directory:
 ```
 PORT=5001
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/lottery-app?retryWrites=true&w=majority
 ```
 
 ### Running the Application

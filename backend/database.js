@@ -1,39 +1,46 @@
-import sqlite3 from 'sqlite3';
-import { promisify } from 'util';
+import { MongoClient } from 'mongodb';
 
-const db = new sqlite3.Database('./lottery.db');
+let client;
+let db;
+let entriesCollection;
 
-// Promisify database methods
-const dbRun = promisify(db.run.bind(db));
-const dbGet = promisify(db.get.bind(db));
-const dbAll = promisify(db.all.bind(db));
-
-// Initialize database
+// Initialize database connection
 export async function initDatabase() {
-  await dbRun(`
-    CREATE TABLE IF NOT EXISTS entries (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      email TEXT NOT NULL UNIQUE,
-      instagram_username TEXT NOT NULL,
-      verified BOOLEAN DEFAULT 0,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-  console.log('Database initialized');
+  try {
+    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/lottery-app';
+
+    client = new MongoClient(mongoUri);
+    await client.connect();
+
+    db = client.db();
+    entriesCollection = db.collection('entries');
+
+    // Create unique index on email and instagram_username
+    await entriesCollection.createIndex({ email: 1 }, { unique: true });
+    await entriesCollection.createIndex({ instagram_username: 1 }, { unique: true });
+
+    console.log('MongoDB connected and initialized');
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw error;
+  }
 }
 
 // Add lottery entry
 export async function addEntry(name, email, instagramUsername) {
   try {
-    const result = await dbRun(
-      'INSERT INTO entries (name, email, instagram_username) VALUES (?, ?, ?)',
-      [name, email, instagramUsername]
-    );
-    return { success: true, id: result.lastID };
+    const result = await entriesCollection.insertOne({
+      name,
+      email,
+      instagram_username: instagramUsername,
+      verified: false,
+      created_at: new Date()
+    });
+
+    return { success: true, id: result.insertedId.toString() };
   } catch (error) {
-    if (error.message.includes('UNIQUE constraint failed')) {
-      throw new Error('This email has already been entered');
+    if (error.code === 11000) {
+      throw new Error('This email or Instagram username has already been entered');
     }
     throw error;
   }
@@ -41,26 +48,58 @@ export async function addEntry(name, email, instagramUsername) {
 
 // Get all entries
 export async function getAllEntries() {
-  return await dbAll('SELECT * FROM entries ORDER BY created_at DESC');
+  const entries = await entriesCollection
+    .find({})
+    .sort({ created_at: -1 })
+    .toArray();
+
+  // Convert MongoDB _id to id for compatibility
+  return entries.map(entry => ({
+    id: entry._id.toString(),
+    name: entry.name,
+    email: entry.email,
+    instagram_username: entry.instagram_username,
+    verified: entry.verified ? 1 : 0,
+    created_at: entry.created_at
+  }));
 }
 
 // Get verified entries only
 export async function getVerifiedEntries() {
-  return await dbAll('SELECT * FROM entries WHERE verified = 1 ORDER BY created_at DESC');
+  const entries = await entriesCollection
+    .find({ verified: true })
+    .sort({ created_at: -1 })
+    .toArray();
+
+  // Convert MongoDB _id to id for compatibility
+  return entries.map(entry => ({
+    id: entry._id.toString(),
+    name: entry.name,
+    email: entry.email,
+    instagram_username: entry.instagram_username,
+    verified: entry.verified ? 1 : 0,
+    created_at: entry.created_at
+  }));
 }
 
 // Verify an entry
 export async function verifyEntry(id) {
-  await dbRun('UPDATE entries SET verified = 1 WHERE id = ?', [id]);
+  const { ObjectId } = await import('mongodb');
+  await entriesCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { verified: true } }
+  );
 }
 
 // Check if user already entered
 export async function checkIfExists(email, instagramUsername) {
-  const result = await dbGet(
-    'SELECT * FROM entries WHERE email = ? OR instagram_username = ?',
-    [email, instagramUsername]
-  );
-  return result !== undefined;
+  const result = await entriesCollection.findOne({
+    $or: [
+      { email },
+      { instagram_username: instagramUsername }
+    ]
+  });
+  return result !== null;
 }
 
 // Get random winner from verified entries
@@ -71,4 +110,12 @@ export async function getRandomWinner() {
   return entries[randomIndex];
 }
 
-export { db };
+// Close database connection (useful for cleanup)
+export async function closeDatabase() {
+  if (client) {
+    await client.close();
+    console.log('MongoDB connection closed');
+  }
+}
+
+export { db, entriesCollection };
