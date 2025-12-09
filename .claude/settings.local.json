@@ -15,7 +15,9 @@
       "Bash(vercel:*)",
       "Bash(npm install mongodb)",
       "Bash(curl:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(cat:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []
